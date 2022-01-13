@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ANIME</title>
+    <link rel='stylesheet' href='/stylesheets/bootstrap.min.css' />
+    <link rel='stylesheet' href='/stylesheets/bgs.css' />
+  </head>
+  <body>
+
+    <input type="hidden" value="<%= loc%>" id="loc" />
+    <input type="hidden" value="<%= lip%>" id="lip" />
+
+    <div class="<%= loc%>">
+      <div class="container">
+        <div class="row d-flex justify-content-center">
+          <div class="col-sm-3 text-center pt-3 pb-3 pl-0 pr-0" style="background-color: bisque; border-radius: 100px;" id="face">
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <script src="/javascripts/lips.js"></script>
+    <script>
+      var letters = document.getElementById('lip').value.split('');
+      var counter = 1;
+
+      changeSvg('face', letters[0]);
+
+      setInterval(()=>{
+        if(counter < letters.length) {
+          changeSvg('face', letters[counter]);
+          counter++;
+        } else {
+          clearInterval();
+          setTimeout(()=>{
+            changeSvg('face', 'b');
+          }, 500);
+        }
+      }, 100);
+
+      function changeSvg(id, letter) {
+        let svg;
+        if(isLetter(letter)) {
+          let svgObj = Object.values(lips).filter(l => l.letters.includes(letter));
+          if(svgObj.length > 0) {
+            svg = svgObj[0].svg;
+            document.getElementById(id).innerHTML = svg;
+          }
+        }
+      }
+
+      function isLetter(letter) {
+        return (/[a-zA-Z.]/).test(letter);
+      }
+    </script>
+    <script src="/javascripts/anime.min.js"></script>
+  </body>
+</html>

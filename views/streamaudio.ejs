@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>STREAM AUDIO</title>
+    <link rel='stylesheet' href='/stylesheets/bootstrap.min.css' />
+    <link rel='stylesheet' href='/stylesheets/bgs.css' />
+  </head>
+  <body>
+
+    <div class="container mt-5">
+      <div class="row d-flex justify-content-center">
+        <div class="col-6">
+          <img src="/images/mic.png" class="mb-4" width="100%" alt="Microphone" />
+          <br>
+          <button class="btn btn-block btn-success rounded shadowed" onclick="startRecording()">Start</button>
+          <br>
+          <button class="btn btn-block btn-danger rounded shadowed" onclick="closeAll()">Stop</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js" integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H" crossorigin="anonymous"></script>
+
+    <script>
+      var stream;
+      var socket = io();
+      var bufferSize = 1024 * 16;
+      var audioContext;
+      var processor;
+      
+      // FUNCTIONS
+      function startRecording() {
+        audioContext = new AudioContext();
+        processor = audioContext.createScriptProcessor(bufferSize, 1, 1);
+        processor.connect(audioContext.destination);
+        navigator.mediaDevices.getUserMedia({ video: false, audio: true }).then(handleMicStream).catch(err => {
+          simulateClick();
+          console.log('error from getUserMedia', err);
+        });
+      }
+
+      function handleMicStream(streamObj) {
+        stream = streamObj;
+
+        input = audioContext.createMediaStreamSource(stream);
+
+        input.connect(processor);
+
+        processor.onaudioprocess = e => {
+          microphoneProcess(e); // receives data from microphone
+        };
+      }
+
+
+      function microphoneProcess(e) {
+        const left = e.inputBuffer.getChannelData(0); // get only one audio channel
+        const left16 = convertFloat32ToInt16(left); // skip if you don't need this
+        socket.emit('startrecording', left16); // send to server via web socket
+      }
+
+      // Converts data to BINARY16
+      function convertFloat32ToInt16(buffer) {
+        let l = buffer.length;
+        const buf = new Int16Array(l / 3);
+
+        while (l--) {
+          if (l % 3 === 0) {
+            buf[l / 3] = buffer[l] * 0xFFFF;
+          }
+        }
+        return buf.buffer;
+      }
+
+      function closeAll() {
+        const tracks = stream ? stream.getTracks() : null;
+        const track = tracks ? tracks[0] : null;
+
+        if (track) {
+          track.stop();
+        }
+
+        if (processor) {
+          if (input) {
+            try {
+              input.disconnect(processor);
+            } catch (error) {
+              console.warn('Attempt to disconnect input failed.');
+            }
+          }
+          processor.disconnect(audioContext.destination);
+        }
+
+        if (audioContext) {
+          audioContext.close().then(() => {
+            input = null;
+            processor = null;
+            audioContext = null;
+          });
+        }
+      }
+
+    </script>
+
+    <script src="/javascripts/anime.min.js"></script>
+  </body>
+</html>

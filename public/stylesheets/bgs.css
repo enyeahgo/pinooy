@@ -1,0 +1,55 @@
+.sala {
+  border: 5px solid black;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1240px;
+  height: 700px;
+  background-image: url('/images/sala.png');
+  background-size: cover;
+}
+.park {
+  border: 5px solid black;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1240px;
+  height: 700px;
+  background-image: url('/images/park.png');
+  background-size: cover;
+}
+.livingroom {
+  border: 5px solid black;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1240px;
+  height: 700px;
+  background-image: url('/images/livingroom.png');
+  background-size: cover;
+}
+.mall {
+  border: 5px solid black;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1240px;
+  height: 700px;
+  background-image: url('/images/mall.png');
+  background-size: cover;
+}
+.playground {
+  border: 5px solid black;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1240px;
+  height: 700px;
+  background-image: url('/images/playground.png');
+  background-size: cover;
+}
